@@ -26,8 +26,9 @@ class ItemsViewController: UITableViewController {
 //        let cell = UITableViewCell(style: .value1, reuseIdentifier: "UITableViewCell")
         
         // Get a new or recycled cell
-        let cell = tableView.dequeueReusableCell(withIdentifier: "UITableViewCell",
-                                                 for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ItemCell",
+                                                 for: indexPath) as! ItemCell
+        
         
         
         // Set the test on the cell with the description of the item
@@ -35,8 +36,11 @@ class ItemsViewController: UITableViewController {
         // will appear in onj the table view
         
         let item = itemStore.allItems[indexPath.row]
-        cell.textLabel?.text = item.name
-        cell.detailTextLabel?.text = "$\(item.valueInDollars)"
+        
+        cell.nameLabel.text = item.name
+        cell.serialNumberLabel.text = item.serialNumber
+        cell.valueLabel.text = "$\(item.valueInDollars)"
+        
         return cell
         
     }
@@ -48,6 +52,11 @@ class ItemsViewController: UITableViewController {
         let insets = UIEdgeInsets(top: statusBarHeight, left: 0, bottom: 0, right: 0)
         tableView.contentInset = insets
         tableView.scrollIndicatorInsets = insets
+//        tableView.rowHeight = 65
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 65
+        
+        
         
     }
     
@@ -77,6 +86,8 @@ class ItemsViewController: UITableViewController {
     override func tableView(_ tableView: UITableView,
                             commit editingStyle: UITableViewCellEditingStyle,
                             forRowAt indexPath: IndexPath) {
+        
+        
         // If the table view is asking to commit a delete command ...
         if editingStyle == .delete {
             let item = itemStore.allItems[indexPath.row]
@@ -88,7 +99,7 @@ class ItemsViewController: UITableViewController {
                                        message: message,
                                        preferredStyle: .actionSheet)
             
-            let cancelAction = UIAlertAction(title: "Canecel", style: .cancel, handler: nil)
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
             ac.addAction(cancelAction)
             
             let deleteAction = UIAlertAction(title: "Delete", style: .destructive,
@@ -99,6 +110,9 @@ class ItemsViewController: UITableViewController {
                                                 self.tableView.deleteRows(at: [indexPath], with: .automatic)
             })
             ac.addAction(deleteAction)
+            
+            // Present the alert controller
+            present(ac, animated: true, completion: nil)
         }
     }
     
